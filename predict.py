@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 input_data = {
     "Sex": "Male",
     "Age": 1,
-    "ECOG PS Score": 1,
+    "ECOG PS Score": 0,
     "Tumor Size (cm)": 0.1,
     "EGFR": "No",
     "ALK": "No",
@@ -18,10 +18,10 @@ input_data = {
     "PMI": "No",
     "LVI": "No",
     "PNI": "No",
-    "Tumor High-Grade Components >20%": "No",
-    "Smoked in the Last 2 Years": "No",
+    "Grade": "G1",
+    "Smoking (current or quit ≤ 2 years)": "No",
     "CEA Value Detected": 0.01,
-    "Post-Operative Chemotherapy": "No",
+    "Adjuvant Chemotherapy": "No",
 }
 
 def calculate(v):
@@ -39,7 +39,7 @@ def calculate(v):
     else:
         a.append(0)
 
-    if v[2]>=90:
+    if v[2]<=1:
         a.append(1)
     else:
         a.append(0)
@@ -84,7 +84,7 @@ def calculate(v):
     else:
         a.append(0)
 
-    if v[11]=='Yes':
+    if v[11]=='G3':
         a.append(1)
     else:
         a.append(0)
@@ -122,7 +122,11 @@ def main():
     with st.form("input_form"):
         for key in input_data.keys():
             if isinstance(input_data[key], int):
-                input_data[key] = st.number_input(key, min_value = 1,  value=input_data[key], step=1)
+                if key == "ECOG PS Score":
+                    input_data[key] = st.number_input(key, min_value = 0, max_value = 5,  value=input_data[key], step=1)
+                else:
+                    input_data[key] = st.number_input(key, min_value = 0, value=input_data[key], step=1)
+
             elif isinstance(input_data[key], float):
                 if key == "Tumor Size (cm)":
                     input_data[key] = st.number_input(key,min_value = 0.1, value=input_data[key], step=0.1, format="%.1f") 
@@ -135,6 +139,8 @@ def main():
                     options = ["No", "Yes"]
                 elif key == "Sex":
                     options = ["Male", "Female"]
+                elif key == "Grade":
+                    options = ["G1", "G2", "G3"]
                 else:
                     options = ["No", "Yes"]
                 input_data[key] = st.selectbox(key, options)
